@@ -1,10 +1,8 @@
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import "dotenv/config";
-import fastify from "fastify";
-import { creatUserRoute } from "./routes/creteUserRoute";
-
-const app = fastify();
+import { app } from "./config/fastify";
+import { registerRoutes } from "./config/routes";
 
 app.register(cors, {
 	origin: true,
@@ -14,7 +12,7 @@ app.register(jwt, {
 	secret: "supersecret",
 });
 
-app.register(creatUserRoute);
+registerRoutes();
 
 app
 	.listen({
