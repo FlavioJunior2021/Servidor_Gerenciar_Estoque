@@ -49,7 +49,6 @@ interface UserLogin {
 }
 
 export async function loginUser(UserLogin: UserLogin): Promise<User> {
-
 	if (!UserLogin.email) {
 		throw new Error("Email is required");
 	}
