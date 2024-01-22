@@ -49,7 +49,6 @@ interface UserLogin {
 }
 
 export async function loginUser(UserLogin: UserLogin): Promise<User> {
-
 	if (!UserLogin.email) {
 		throw new Error("Email is required");
 	}
@@ -67,7 +66,6 @@ export async function loginUser(UserLogin: UserLogin): Promise<User> {
 	if (!userLoginCredentials) {
 		throw new Error("User does not exist");
 	}
-
 
 	if (!bcrypt.compareSync(UserLogin.password, userLoginCredentials.password)) {
 		throw new Error("Invalid credentials");
