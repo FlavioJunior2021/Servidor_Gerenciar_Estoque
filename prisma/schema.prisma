@@ -25,7 +25,7 @@ model User {
 }
 
 model Product {
-  id          Int               @id @default(autoincrement())
+  id          String               @id @default(cuid())
   name        String
   description String
   quantity    Int
@@ -35,24 +35,24 @@ model Product {
 }
 
 model Supplier {
-  id       Int               @id @default(autoincrement())
+  id       String               @id @default(cuid())
   name     String
   contact  String
   products ProductSupplier[]
 }
 
 model ProductSupplier {
-  productId  Int
+  productId  String
   product    Product  @relation(fields: [productId], references: [id])
-  supplierId Int
+  supplierId String
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
   @@id([productId, supplierId])
 }
 
 model Sale {
-  id        Int      @id @default(autoincrement())
-  productId Int
+  id        String      @id @default(cuid())
+  productId String
   product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   salePrice Float
