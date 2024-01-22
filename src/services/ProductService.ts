@@ -41,3 +41,29 @@ export async function createProduct(productData: ProductData): Promise<Product> 
 
 	return product;
 }
+
+interface ProductID {
+	id: string
+}
+
+export async function deleteProduct(productID: ProductID) {
+	if (!productID.id) {
+		throw new Error("ID is required");
+	}
+
+	const existingProduct = await prisma.product.findUniqueOrThrow({
+		where: {
+			id: productID.id
+		}
+	})
+
+	if (!existingProduct) {
+		throw new Error("The product does not exist in stock");
+	}
+
+	await prisma.product.delete({
+		where: {
+			id: productID.id
+		}
+	})
+}
