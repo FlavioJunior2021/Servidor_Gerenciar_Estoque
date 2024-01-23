@@ -35,7 +35,7 @@ export async function deleteProductController(
 	try {
 		const validatedData = idProductSchema.parse(request.params);
 
-		const product = await deleteProduct(validatedData);
+		await deleteProduct(validatedData);
 
 		reply.code(201).send("Deleted");
 	} catch (error) {

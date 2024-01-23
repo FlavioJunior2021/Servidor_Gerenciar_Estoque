@@ -1,14 +1,18 @@
 import { Product } from "@prisma/client";
 import { prisma } from "../config/prisma";
+import { Prisma } from "@prisma/client";
 
-interface ProductData {
+
+interface ProductData extends Prisma.ProductUncheckedCreateInput{
 	name: string;
 	description: string;
 	quantity: number;
 	price: number;
 }
 
-export async function createProduct(productData: ProductData): Promise<Product> {
+export async function createProduct(
+	productData: ProductData
+): Promise<Product> {
 	if (!productData.name) {
 		throw new Error("Name is required");
 	}
@@ -27,9 +31,9 @@ export async function createProduct(productData: ProductData): Promise<Product> 
 
 	const existingProduct = await prisma.product.findFirst({
 		where: {
-			name: productData.name
-		}
-	})
+			name: productData.name,
+		},
+	});
 
 	if (existingProduct) {
 		throw new Error("Product already registered");
@@ -37,13 +41,13 @@ export async function createProduct(productData: ProductData): Promise<Product> 
 
 	const product = await prisma.product.create({
 		data: productData,
-	})
+	});
 
 	return product;
 }
 
 interface ProductID {
-	id: string
+	id: string;
 }
 
 export async function deleteProduct(productID: ProductID) {
@@ -53,9 +57,9 @@ export async function deleteProduct(productID: ProductID) {
 
 	const existingProduct = await prisma.product.findUniqueOrThrow({
 		where: {
-			id: productID.id
-		}
-	})
+			id: productID.id,
+		},
+	});
 
 	if (!existingProduct) {
 		throw new Error("The product does not exist in stock");
@@ -63,7 +67,7 @@ export async function deleteProduct(productID: ProductID) {
 
 	await prisma.product.delete({
 		where: {
-			id: productID.id
-		}
-	})
+			id: productID.id,
+		},
+	});
 }

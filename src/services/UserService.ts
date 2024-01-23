@@ -1,9 +1,10 @@
 // services/userService.ts
 import { Role, User } from "@prisma/client";
 import { prisma } from "../config/prisma";
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
 
-interface UserData {
+interface UserData extends Prisma.UserUncheckedCreateInput{
 	email: string;
 	password: string;
 	name: string;
