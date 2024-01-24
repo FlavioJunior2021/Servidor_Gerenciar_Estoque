@@ -1,6 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { createProduct, deleteProduct } from "../services/ProductService";
+import {
+	createProduct,
+	deleteProduct,
+	getProducts,
+} from "../services/ProductService";
 
 const productSchema = z.object({
 	name: z.string(),
@@ -38,6 +42,19 @@ export async function deleteProductController(
 		await deleteProduct(validatedData);
 
 		reply.code(201).send("Deleted");
+	} catch (error) {
+		reply.code(400).send({ error: error.message });
+	}
+}
+
+export async function getProductsController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const products = await getProducts();
+
+		reply.code(201).send(products);
 	} catch (error) {
 		reply.code(400).send({ error: error.message });
 	}

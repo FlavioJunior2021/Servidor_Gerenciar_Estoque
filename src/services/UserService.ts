@@ -4,11 +4,16 @@ import { prisma } from "../config/prisma";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
 
-interface UserData extends Prisma.UserUncheckedCreateInput{
+interface UserData extends Prisma.UserUncheckedCreateInput {
 	email: string;
 	password: string;
 	name: string;
 	role?: Role;
+}
+
+interface UserLogin {
+	email: string;
+	password: string;
 }
 
 export async function createUser(userData: UserData): Promise<User> {
@@ -42,11 +47,6 @@ export async function createUser(userData: UserData): Promise<User> {
 	});
 
 	return user;
-}
-
-interface UserLogin {
-	email: string;
-	password: string;
 }
 
 export async function loginUser(UserLogin: UserLogin): Promise<User> {

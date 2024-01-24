@@ -25,7 +25,7 @@ model User {
 }
 
 model Product {
-  id          String               @id @default(cuid())
+  id          String            @id @default(cuid())
   name        String
   description String
   quantity    Int
@@ -35,7 +35,7 @@ model Product {
 }
 
 model Supplier {
-  id       String               @id @default(cuid())
+  id       String            @id @default(cuid())
   name     String
   contact  String
   products ProductSupplier[]
@@ -51,7 +51,7 @@ model ProductSupplier {
 }
 
 model Sale {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   productId String
   product   Product  @relation(fields: [productId], references: [id])
   quantity  Int

@@ -31,6 +31,10 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 		throw new Error("The product does not exist");
 	}
 
+	if (saleData.quantity > existingProduct.quantity) {
+		throw new Error("Quantity in stock less than requested");
+	}
+
 	const sale = await prisma.sale.create({
 		data: saleData,
 	});

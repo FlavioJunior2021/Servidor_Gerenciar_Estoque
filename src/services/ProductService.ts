@@ -10,6 +10,10 @@ interface ProductData extends Prisma.ProductUncheckedCreateInput{
 	price: number;
 }
 
+interface ProductID {
+	id: string;
+}
+
 export async function createProduct(
 	productData: ProductData
 ): Promise<Product> {
@@ -46,10 +50,6 @@ export async function createProduct(
 	return product;
 }
 
-interface ProductID {
-	id: string;
-}
-
 export async function deleteProduct(productID: ProductID) {
 	if (!productID.id) {
 		throw new Error("ID is required");
@@ -70,4 +70,13 @@ export async function deleteProduct(productID: ProductID) {
 			id: productID.id,
 		},
 	});
+}
+
+export async function getProducts(): Promise<Product[]> {
+	const products = await prisma.product.findMany({
+		orderBy: {
+			quantity: "asc"
+		}
+	})
+	return products
 }
