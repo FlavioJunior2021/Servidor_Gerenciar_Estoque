@@ -41,14 +41,14 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 
 	const newQuantity = existingProduct.quantity - saleData.quantity;
 
- 	await prisma.product.update({
+	await prisma.product.update({
 		where: {
-			id: saleData.productId
+			id: saleData.productId,
 		},
 		data: {
-			quantity: newQuantity
-		}
-	})
+			quantity: newQuantity,
+		},
+	});
 
-	return sale
+	return sale;
 }
