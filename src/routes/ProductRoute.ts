@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createProductController, deleteProductController, getProductsController } from "../controllers/ProductController";
+import { createProductController, deleteProductController, getProductsController, updateProductController } from "../controllers/ProductController";
 import { jwtAuthenticate } from "../config/jwt";
 
 export function createProductRoute(
@@ -37,6 +37,19 @@ export function getProductsRoute(
 		"/products",
 		{ preValidation: [jwtAuthenticate] },
 		getProductsController
+	);
+	done();
+}
+
+export function updateProductRoute(
+	fastify: FastifyInstance,
+	options: any,
+	done: any
+) {
+	fastify.put(
+		"/product/update/:id",
+		{ preValidation: [jwtAuthenticate] },
+		updateProductController
 	);
 	done();
 }

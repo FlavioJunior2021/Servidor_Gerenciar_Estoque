@@ -4,6 +4,7 @@ import {
 	createProduct,
 	deleteProduct,
 	getProducts,
+	updateProduct,
 } from "../services/ProductService";
 
 const productSchema = z.object({
@@ -12,6 +13,10 @@ const productSchema = z.object({
 	price: z.number(),
 	quantity: z.number(),
 });
+
+const paramsSchema = z.object({
+	id: z.string().cuid(),
+})
 
 export async function createProductController(
 	request: FastifyRequest,
@@ -55,6 +60,22 @@ export async function getProductsController(
 		const products = await getProducts();
 
 		reply.code(201).send(products);
+	} catch (error) {
+		reply.code(400).send({ error: error.message });
+	}
+}
+
+export async function updateProductController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const validatedData = productSchema.parse(request.body);
+		const validateID = paramsSchema.parse(request.params)
+
+		const product = await updateProduct(validatedData, validateID);
+
+		reply.code(201).send(product);
 	} catch (error) {
 		reply.code(400).send({ error: error.message });
 	}
