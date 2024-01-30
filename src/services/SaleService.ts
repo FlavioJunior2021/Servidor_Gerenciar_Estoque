@@ -2,10 +2,9 @@ import { Sale } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { Prisma } from "@prisma/client";
 
-interface SaleData extends Prisma.SaleUncheckedCreateInput {
+interface SaleData {
 	productId: string;
 	quantity: number;
-	salePrice: number;
 }
 
 export async function registerSale(saleData: SaleData): Promise<Sale> {
@@ -15,10 +14,6 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 
 	if (!saleData.quantity) {
 		throw new Error("Enter the quantity of products sold");
-	}
-
-	if (!saleData.salePrice) {
-		throw new Error("Enter the sale price");
 	}
 
 	const existingProduct = await prisma.product.findUniqueOrThrow({
@@ -35,11 +30,8 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 		throw new Error("Quantity in stock less than requested");
 	}
 
-	const sale = await prisma.sale.create({
-		data: saleData,
-	});
-
 	const newQuantity = existingProduct.quantity - saleData.quantity;
+	const salePrice = saleData.quantity * existingProduct.price;
 
 	await prisma.product.update({
 		where: {
@@ -47,6 +39,14 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 		},
 		data: {
 			quantity: newQuantity,
+		},
+	});
+
+	const sale = await prisma.sale.create({
+		data: {
+			quantity: saleData.quantity,
+			salePrice: salePrice,
+			productId: existingProduct.id
 		},
 	});
 

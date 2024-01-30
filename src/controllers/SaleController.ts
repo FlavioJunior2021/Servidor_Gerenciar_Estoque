@@ -4,7 +4,6 @@ import { registerSale } from "../services/SaleService";
 
 const saleSchema = z.object({
   quantity: z.number(),
-  salePrice: z.number(),
 	productId: z.string().cuid(),
 });
 
