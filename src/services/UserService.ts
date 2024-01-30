@@ -1,4 +1,3 @@
-// services/userService.ts
 import { Role, User } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { Prisma } from "@prisma/client";
@@ -11,23 +10,31 @@ interface UserData extends Prisma.UserUncheckedCreateInput {
 	role?: Role;
 }
 
+interface UserUpdate extends Prisma.UserUpdateInput {
+	email: string;
+	name?: string;
+	password?: string;
+	role?: Role;
+}
+
 interface UserLogin {
 	email: string;
 	password: string;
 }
 
+async function validateUserInput(userData: UserData | UserLogin, isLogin = false) {
+	const requiredFields = ['email', 'password'];
+	if (!isLogin) requiredFields.push('name');
+
+	for (const field of requiredFields) {
+		if (!userData[field]) {
+			throw new Error(`${field.charAt(0).toUpperCase() + field.slice(1)} is required`);
+		}
+	}
+}
+
 export async function createUser(userData: UserData): Promise<User> {
-	if (!userData.email) {
-		throw new Error("Email is required");
-	}
-
-	if (!userData.password) {
-		throw new Error("Password is required");
-	}
-
-	if (!userData.name) {
-		throw new Error("Name is required");
-	}
+	await validateUserInput(userData);
 
 	const existingUser = await prisma.user.findFirst({
 		where: {
@@ -39,24 +46,13 @@ export async function createUser(userData: UserData): Promise<User> {
 		throw new Error("User already registered with this email");
 	}
 
-	const hashedPassword = bcrypt.hashSync(userData.password, 10);
-	userData.password = hashedPassword;
+	userData.password = bcrypt.hashSync(userData.password, 10);
 
-	const user = await prisma.user.create({
-		data: userData,
-	});
-
-	return user;
+	return prisma.user.create({ data: userData });
 }
 
 export async function loginUser(UserLogin: UserLogin): Promise<User> {
-	if (!UserLogin.email) {
-		throw new Error("Email is required");
-	}
-
-	if (!UserLogin.password) {
-		throw new Error("Password is required");
-	}
+	await validateUserInput(UserLogin, true);
 
 	const userLoginCredentials = await prisma.user.findFirst({
 		where: {

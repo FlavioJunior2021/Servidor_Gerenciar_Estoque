@@ -21,3 +21,4 @@ export function authUserRoute(
 	fastify.post("/user/auth", authUserController);
 	done();
 }
+

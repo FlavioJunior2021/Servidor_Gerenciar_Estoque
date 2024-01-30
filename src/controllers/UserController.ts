@@ -8,6 +8,11 @@ const userSchema = z.object({
 	password: z.string().min(8),
 });
 
+const userAuthEschema = z.object({
+	email: z.string().email(),
+	password: z.string().min(8),
+});
+
 export async function createUserController(
 	request: FastifyRequest,
 	reply: FastifyReply
@@ -36,10 +41,6 @@ export async function createUserController(
 	}
 }
 
-const userAuthEschema = z.object({
-	email: z.string().email(),
-	password: z.string().min(8),
-});
 
 export async function authUserController(
 	request: FastifyRequest,
@@ -67,4 +68,3 @@ export async function authUserController(
 		reply.code(400).send({ error: error.message });
 	}
 }
-
