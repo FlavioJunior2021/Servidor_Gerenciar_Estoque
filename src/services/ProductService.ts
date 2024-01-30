@@ -2,8 +2,7 @@ import { Product } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { Prisma } from "@prisma/client";
 
-
-interface ProductData extends Prisma.ProductUncheckedCreateInput{
+interface ProductData extends Prisma.ProductUncheckedCreateInput {
 	name: string;
 	description: string;
 	quantity: number;
@@ -67,8 +66,8 @@ export async function deleteProduct(productID: ProductID) {
 
 	await prisma.sale.deleteMany({
 		where: {
-			productId: existingProduct.id
-		}
+			productId: existingProduct.id,
+		},
 	});
 
 	await prisma.product.delete({
@@ -81,13 +80,25 @@ export async function deleteProduct(productID: ProductID) {
 export async function getProducts(): Promise<Product[]> {
 	const products = await prisma.product.findMany({
 		orderBy: {
-			quantity: "asc"
-		}
-	})
-	return products
+			quantity: "asc",
+		},
+	});
+	return products;
 }
 
-export async function updateProduct(productData: ProductData, productID: ProductID): Promise<Product> {
+export async function getProductsById(productID: ProductID): Promise<Product> {
+	const product = await prisma.product.findUniqueOrThrow({
+		where: {
+			id: productID.id,
+		},
+	});
+	return product;
+}
+
+export async function updateProduct(
+	productData: ProductData,
+	productID: ProductID
+): Promise<Product> {
 	if (!productData.name) {
 		throw new Error("Name is required");
 	}
@@ -106,7 +117,7 @@ export async function updateProduct(productData: ProductData, productID: Product
 
 	const existingProduct = await prisma.product.findFirstOrThrow({
 		where: {
-			 id: productData.id,
+			id: productData.id,
 		},
 	});
 
@@ -116,10 +127,10 @@ export async function updateProduct(productData: ProductData, productID: Product
 
 	const product = await prisma.product.update({
 		where: {
-			id: productID.id
+			id: productID.id,
 		},
-		data: productData
-	})
+		data: productData,
+	});
 
-	return product
+	return product;
 }
