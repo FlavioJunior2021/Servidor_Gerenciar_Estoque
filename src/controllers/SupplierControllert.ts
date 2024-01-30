@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { string, z } from "zod";
-import { createSupplier, createProductSupplier } from "../services/SupplierService";
+import { createSupplier, createProductSupplier, getProductsSupplier } from "../services/SupplierService";
 
 const supplierSchema = z.object({
 	name: z.string(),
@@ -42,3 +42,16 @@ export async function createProductSupplierController(
 	}
 }
 
+export async function getProductsSupplierController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+
+		const productSupllier = await getProductsSupplier();
+
+		reply.code(201).send(productSupllier);
+	} catch (error) {
+		reply.code(400).send({ error: error.message });
+	}
+}

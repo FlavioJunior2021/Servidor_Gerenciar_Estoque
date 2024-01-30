@@ -54,3 +54,8 @@ export async function createProductSupplier(productSupllier: ProductSupplierData
 
 	return newProductSupplier
 }
+
+export async function getProductsSupplier(): Promise<ProductSupplier[]> {
+	const productSupllier = await prisma.productSupplier.findMany();
+	return productSupllier
+}
