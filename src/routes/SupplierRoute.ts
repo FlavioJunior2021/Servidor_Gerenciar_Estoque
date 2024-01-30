@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createSupplierController } from "../controllers/SupplierControllert";
+import { createSupplierController, createProductSupplierController } from "../controllers/SupplierControllert";
 import { jwtAuthenticate } from "../config/jwt";
 
 export function createSupplierRoute(
@@ -11,6 +11,20 @@ export function createSupplierRoute(
 		"/supplier/create",
 		{ preValidation: [jwtAuthenticate] },
 		createSupplierController
+	);
+	done();
+}
+
+
+export function createproductSupplierRoute(
+	fastify: FastifyInstance,
+	options: any,
+	done: any
+) {
+	fastify.post(
+		"/productsupplier/create",
+		{ preValidation: [jwtAuthenticate] },
+		createProductSupplierController
 	);
 	done();
 }

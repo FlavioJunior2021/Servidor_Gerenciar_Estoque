@@ -1,11 +1,11 @@
 import { createProductRoute, deleteProductRoute, getProductsByIdRoute, getProductsRoute, updateProductRoute } from "../routes/ProductRoute";
 import { registerSaleRoute } from "../routes/SaleRoute";
-import { createSupplierRoute } from "../routes/SupplierRoute";
+import { createSupplierRoute, createproductSupplierRoute } from "../routes/SupplierRoute";
 import { authUserRoute, creatUserRoute } from "../routes/UserRoute";
 import { app } from "./fastify";
 
 export function registerRoutes() {
-	const routes = [creatUserRoute, authUserRoute, createProductRoute, deleteProductRoute, updateProductRoute, getProductsRoute, getProductsByIdRoute, registerSaleRoute, createSupplierRoute];
+	const routes = [creatUserRoute, authUserRoute, createProductRoute, deleteProductRoute, updateProductRoute, getProductsRoute, getProductsByIdRoute, registerSaleRoute, createSupplierRoute, createproductSupplierRoute];
 	routes.forEach((route) => {
 		app.register(route);
 	});

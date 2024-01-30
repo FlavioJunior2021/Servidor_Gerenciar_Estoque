@@ -1,10 +1,15 @@
-import { Supplier } from "@prisma/client";
+import { ProductSupplier, Supplier } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { Prisma } from "@prisma/client";
 
 interface SupplierData extends Prisma.SupplierUncheckedCreateInput {
 	name: string;
 	contact: string;
+}
+
+interface ProductSupplierData extends Prisma.ProductSupplierUncheckedCreateInput {
+	productId: string;
+	supplierId: string;
 }
 
 export async function createSupplier(
@@ -33,4 +38,19 @@ export async function createSupplier(
 	});
 
 	return supplier;
+}
+
+export async function createProductSupplier(productSupllier: ProductSupplierData): Promise<ProductSupplier> {
+	if(!productSupllier.productId) {
+		throw new Error("ProductId is required");
+	}
+	if(!productSupllier.supplierId) {
+		throw new Error("SupplierId is required");
+	}
+
+	const newProductSupplier = await prisma.productSupplier.create({
+		data: productSupllier
+	})
+
+	return newProductSupplier
 }
