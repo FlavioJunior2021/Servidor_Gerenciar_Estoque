@@ -12,50 +12,75 @@ interface ProductSupplierData extends Prisma.ProductSupplierUncheckedCreateInput
 	supplierId: string;
 }
 
+export function validateContactNumber(contact: string) {
+	const contactRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+	if (!contactRegex.test(contact)) {
+		throw new Error("Invalid contact number");
+	}
+}
+
+async function findSupplierById(id: string) {
+	return await prisma.supplier.findUnique({
+		where: { id },
+	});
+}
+
+async function findSupplierByName(name: string) {
+	return await prisma.supplier.findFirst({
+		where: { name },
+	});
+}
+
 export async function createSupplier(
 	supplierData: SupplierData
 ): Promise<Supplier> {
-	if (!supplierData.contact) {
-		throw new Error("Contact is required");
-	}
+	const { name, contact } = supplierData;
 
-	if (!supplierData.name) {
-		throw new Error("Name is required");
-	}
+	if (!contact) throw new Error("Contact is required");
+	if (!name) throw new Error("Name is required");
 
-	const existingSupplier = await prisma.supplier.findFirst({
-		where: {
-			name: supplierData.name,
-		},
-	});
+	validateContactNumber(contact);
 
-	if (existingSupplier) {
-		throw new Error("Supplier already registered");
-	}
+	const existingSupplier = await findSupplierByName(name);
+	if (existingSupplier) throw new Error("Supplier already registered");
 
-	const supplier = await prisma.supplier.create({
-		data: supplierData,
-	});
-
-	return supplier;
+	return await prisma.supplier.create({ data: supplierData });
 }
 
-export async function createProductSupplier(productSupllier: ProductSupplierData): Promise<ProductSupplier> {
-	if(!productSupllier.productId) {
-		throw new Error("ProductId is required");
-	}
-	if(!productSupllier.supplierId) {
-		throw new Error("SupplierId is required");
-	}
+export async function updateSupplier(
+	supplierData: SupplierData,
+	supplierId: string
+): Promise<Supplier> {
+	const { name, contact } = supplierData;
 
-	const newProductSupplier = await prisma.productSupplier.create({
-		data: productSupllier
-	})
+	if (!contact) throw new Error("Contact is required");
+	if (!name) throw new Error("Name is required");
 
-	return newProductSupplier
+	validateContactNumber(contact);
+
+	const existingSupplier = await findSupplierById(supplierId);
+	if (!existingSupplier)
+		throw new Error("The supplier does not exist in database");
+
+	return await prisma.supplier.update({
+		where: { id: supplierId },
+		data: supplierData,
+	});
+}
+
+export async function createProductSupplier(
+	productSupplierData: ProductSupplierData
+): Promise<ProductSupplier> {
+	const { productId, supplierId } = productSupplierData;
+
+	if (!productId) throw new Error("ProductId is required");
+	if (!supplierId) throw new Error("SupplierId is required");
+
+	return await prisma.productSupplier.create({
+		data: productSupplierData,
+	});
 }
 
 export async function getProductsSupplier(): Promise<ProductSupplier[]> {
-	const productSupllier = await prisma.productSupplier.findMany();
-	return productSupllier
+	return await prisma.productSupplier.findMany();
 }
