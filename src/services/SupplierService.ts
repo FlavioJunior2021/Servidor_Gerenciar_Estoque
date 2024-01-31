@@ -7,7 +7,8 @@ interface SupplierData extends Prisma.SupplierUncheckedCreateInput {
 	contact: string;
 }
 
-interface ProductSupplierData extends Prisma.ProductSupplierUncheckedCreateInput {
+interface ProductSupplierData
+	extends Prisma.ProductSupplierUncheckedCreateInput {
 	productId: string;
 	supplierId: string;
 }
@@ -68,10 +69,36 @@ export async function updateSupplier(
 	});
 }
 
+export async function deleteSupplier(supplierId: string) {
+	const id = supplierId;
+
+	if (!id) throw new Error("ID is required");
+
+	const existingSupplier = await findSupplierById(id);
+	if (!existingSupplier)
+		throw new Error("The supplier does not exist in database");
+
+	await prisma.productSupplier.deleteMany({
+		where: { supplierId: id },
+	});
+
+	await prisma.supplier.deleteMany({
+		where: { id: id },
+	});
+}
+
+export async function getSupplier(): Promise<Supplier[]> {
+	return await prisma.supplier.findMany();
+}
+
 export async function createProductSupplier(
 	productSupplierData: ProductSupplierData
 ): Promise<ProductSupplier> {
 	const { productId, supplierId } = productSupplierData;
+
+	const existingSupplier = await findSupplierById(supplierId);
+	if (!existingSupplier)
+		throw new Error("The supplier does not exist in database");
 
 	if (!productId) throw new Error("ProductId is required");
 	if (!supplierId) throw new Error("SupplierId is required");

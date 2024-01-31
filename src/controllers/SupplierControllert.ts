@@ -5,6 +5,8 @@ import {
 	createProductSupplier,
 	getProductsSupplier,
 	updateSupplier,
+	deleteSupplier,
+	getSupplier,
 } from "../services/SupplierService";
 
 const supplierSchema = z.object({
@@ -13,12 +15,12 @@ const supplierSchema = z.object({
 });
 
 const supplierParamsSchema = z.object({
-	id: z.string().cuid(),
+	id: z.string(),
 });
 
 const createProductSupplierSchema = z.object({
-	productId: z.string().cuid(),
-	supplierId: z.string().cuid(),
+	productId: z.string(),
+	supplierId: z.string(),
 });
 
 async function handleControllerError(error: Error, reply: FastifyReply) {
@@ -47,6 +49,31 @@ export async function updateSupplierController(
 		const validateId = supplierParamsSchema.parse(request.params);
 		const supplier = await updateSupplier(validatedData, validateId.id);
 		reply.code(201).send(supplier);
+	} catch (error) {
+		handleControllerError(error, reply);
+	}
+}
+
+export async function deleteSupplierController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const validateId = supplierParamsSchema.parse(request.params);
+		await deleteSupplier(validateId.id);
+		reply.code(201).send("Deleted");
+	} catch (error) {
+		handleControllerError(error, reply);
+	}
+}
+
+export async function getSupplierController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const suppliers = await getSupplier();
+		reply.code(201).send(suppliers);
 	} catch (error) {
 		handleControllerError(error, reply);
 	}
