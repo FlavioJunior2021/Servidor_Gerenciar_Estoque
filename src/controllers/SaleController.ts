@@ -13,9 +13,7 @@ export async function registerSaleController(
 ) {
 	try {
 		const validatedData = saleSchema.parse(request.body);
-
     const sale = await registerSale(validatedData);
-		
 		reply.code(201).send(sale)
 	} catch (error) {
 		reply.code(400).send({ error: error.message });
