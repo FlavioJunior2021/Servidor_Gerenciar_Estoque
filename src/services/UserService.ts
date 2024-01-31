@@ -22,13 +22,22 @@ interface UserLogin {
 	password: string;
 }
 
-async function validateUserInput(userData: UserData | UserLogin, isLogin = false) {
-	const requiredFields = ['email', 'password'];
-	if (!isLogin) requiredFields.push('name');
+interface DeleteUser {
+	id: string
+}
+
+async function validateUserInput(
+	userData: UserData | UserLogin,
+	isLogin = false
+) {
+	const requiredFields = ["email", "password"];
+	if (!isLogin) requiredFields.push("name");
 
 	for (const field of requiredFields) {
 		if (!userData[field]) {
-			throw new Error(`${field.charAt(0).toUpperCase() + field.slice(1)} is required`);
+			throw new Error(
+				`${field.charAt(0).toUpperCase() + field.slice(1)} is required`
+			);
 		}
 	}
 }
@@ -69,4 +78,57 @@ export async function loginUser(UserLogin: UserLogin): Promise<User> {
 	}
 
 	return userLoginCredentials;
+}
+
+export async function updateUser(userUpdate: UserUpdate): Promise<User> {
+	const { email, name, password, role } = userUpdate;
+
+	if (!email) throw new Error("Email is required");
+
+	const existingUser = await prisma.user.findFirst({
+		where: {
+			email: email,
+		},
+	});
+
+	if (!existingUser) {
+		throw new Error("User does not exist");
+	}
+
+	if (password) {
+		userUpdate.password = bcrypt.hashSync(password, 10);
+	}
+
+	return await prisma.user.update({
+		where: { email: email },
+		data: {
+			name: name,
+			password: userUpdate.password,
+			role: role,
+		},
+	});
+}
+
+export async function deleteUser(deleteUser: DeleteUser) {
+	const { id } = deleteUser;
+
+	if (!id) throw new Error("ID is required");
+
+	const existingUser = await prisma.user.findUniqueOrThrow({
+		where: {
+			id: id,
+		},
+	});
+
+	if (!existingUser) {
+		throw new Error("User does not exist");
+	}
+
+	await prisma.user.delete({
+		where: { id: id },
+	});
+}
+
+export async function getUser(): Promise<User[]> {
+	return await prisma.user.findMany();
 }
