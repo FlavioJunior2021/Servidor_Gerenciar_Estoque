@@ -33,3 +33,7 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 		},
 	});
 }
+
+export async function getSales(): Promise<Sale[]> {
+	return await prisma.sale.findMany();
+}

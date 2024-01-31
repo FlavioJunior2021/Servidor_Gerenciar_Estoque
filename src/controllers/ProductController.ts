@@ -19,6 +19,10 @@ const paramsSchema = z.object({
 	id: z.string().cuid(),
 });
 
+const idProductSchema = z.object({
+	id: z.string().cuid(),
+});
+
 export async function createProductController(
 	request: FastifyRequest,
 	reply: FastifyReply
@@ -33,10 +37,6 @@ export async function createProductController(
 		reply.code(400).send({ error: error.message });
 	}
 }
-
-const idProductSchema = z.object({
-	id: z.string().cuid(),
-});
 
 export async function deleteProductController(
 	request: FastifyRequest,
