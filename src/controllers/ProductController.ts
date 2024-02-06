@@ -5,6 +5,7 @@ import {
 	deleteProduct,
 	getProducts,
 	getProductsById,
+	getProductsByName,
 	updateProduct,
 } from "../services/ProductService";
 
@@ -21,6 +22,10 @@ const paramsSchema = z.object({
 
 const idProductSchema = z.object({
 	id: z.string().cuid(),
+});
+
+const nameProductSchema = z.object({
+	name: z.string(),
 });
 
 export async function createProductController(
@@ -74,6 +79,21 @@ export async function getProductsByIdController(
 		const validatedData = idProductSchema.parse(request.params);
 
 		const product = await getProductsById(validatedData);
+
+		reply.code(201).send(product);
+	} catch (error) {
+		reply.code(400).send({ error: error.message });
+	}
+}
+
+export async function getProductsByNameController(
+	request: FastifyRequest,
+	reply: FastifyReply
+) {
+	try {
+		const validateName = nameProductSchema.parse(request.params);
+
+		const product = await getProductsByName(validateName);
 
 		reply.code(201).send(product);
 	} catch (error) {

@@ -13,6 +13,10 @@ interface ProductID {
 	id: string;
 }
 
+interface ProductName {
+	name: string;
+}
+
 export async function createProduct(
 	productData: ProductData
 ): Promise<Product> {
@@ -87,11 +91,28 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductsById(productID: ProductID): Promise<Product> {
-	const product = await prisma.product.findUniqueOrThrow({
+	const product = await prisma.product.findUnique({
 		where: {
 			id: productID.id,
 		},
 	});
+	if (!product) {
+		throw new Error(`Product with ID: ${productID.id} not found.`);
+	}
+	return product;
+}
+
+export async function getProductsByName(
+	ProductName: ProductName
+): Promise<Product> {
+	const product = await prisma.product.findFirst({
+		where: {
+			name: ProductName.name,
+		},
+	});
+	if (!product) {
+		throw new Error(`Product with name: ${ProductName.name} not found.`);
+	}
 	return product;
 }
 
