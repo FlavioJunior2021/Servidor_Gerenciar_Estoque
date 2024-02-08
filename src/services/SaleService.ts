@@ -6,6 +6,10 @@ interface SaleData {
 	quantity: number;
 }
 
+interface SaleProductId {
+	id: string;
+}
+
 export async function registerSale(saleData: SaleData): Promise<Sale> {
 	const { productId, quantity } = saleData;
 
@@ -36,4 +40,20 @@ export async function registerSale(saleData: SaleData): Promise<Sale> {
 
 export async function getSales(): Promise<Sale[]> {
 	return await prisma.sale.findMany();
+}
+
+export async function getSalesById(saleProductId: SaleProductId): Promise<Sale[]> {
+	const { id } = saleProductId;
+
+	if (!id) throw new Error("productID is required");
+
+	const existingProduct = await prisma.product.findUniqueOrThrow({
+		where: { id: id },
+	});
+
+	if (!existingProduct) throw new Error(`Product with ID: ${existingProduct} not found.`);
+
+	return await prisma.sale.findMany({
+		where: { productId: id },
+	});
 }
