@@ -92,9 +92,7 @@ export async function getProductsByNameController(
 ) {
 	try {
 		const validateName = nameProductSchema.parse(request.params);
-
 		const product = await getProductsByName(validateName);
-
 		reply.code(201).send(product);
 	} catch (error) {
 		reply.code(400).send({ error: error.message });

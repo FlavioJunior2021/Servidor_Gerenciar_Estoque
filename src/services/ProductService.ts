@@ -20,31 +20,30 @@ interface ProductName {
 export async function createProduct(
 	productData: ProductData
 ): Promise<Product> {
-	if (!productData.name) {
+	const { name, description, price, quantity } = productData;
+	if (!name) {
 		throw new Error("Name is required");
 	}
 
-	if (!productData.description) {
+	if (!description) {
 		throw new Error("Description is required");
 	}
 
-	if (!productData.price) {
+	if (!price) {
 		throw new Error("Price is required");
 	}
 
-	if (!productData.quantity) {
+	if (!quantity) {
 		throw new Error("Quantity is required");
 	}
 
 	const existingProduct = await prisma.product.findFirst({
 		where: {
-			name: productData.name,
+			name: name,
 		},
 	});
 
-	if (existingProduct) {
-		throw new Error("Product already registered");
-	}
+	if (existingProduct) throw new Error("Product already registered");
 
 	const product = await prisma.product.create({
 		data: productData,
@@ -54,29 +53,27 @@ export async function createProduct(
 }
 
 export async function deleteProduct(productID: ProductID) {
-	if (!productID.id) {
-		throw new Error("ID is required");
-	}
+	const { id } = productID;
+
+	if (!id) throw new Error("ID is required");
 
 	const existingProduct = await prisma.product.findUnique({
 		where: {
-			id: productID.id,
+			id: id,
 		},
 	});
 
-	if (!existingProduct) {
-		throw new Error("The product does not exist in stock");
-	}
+	if (!existingProduct) throw new Error("The product does not exist in stock");
 
 	await prisma.sale.deleteMany({
 		where: {
-			productId: existingProduct.id,
+			productId: id,
 		},
 	});
 
 	await prisma.product.delete({
 		where: {
-			id: productID.id,
+			id: id,
 		},
 	});
 }
@@ -91,28 +88,28 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductsById(productID: ProductID): Promise<Product> {
+	const { id } = productID;
 	const product = await prisma.product.findUnique({
 		where: {
-			id: productID.id,
+			id: id,
 		},
 	});
-	if (!product) {
-		throw new Error(`Product with ID: ${productID.id} not found.`);
-	}
+	if (!product) throw new Error(`Product with ID: ${id} not found.`);
+
 	return product;
 }
 
 export async function getProductsByName(
 	ProductName: ProductName
 ): Promise<Product> {
+	const { name } = ProductName;
+	
 	const product = await prisma.product.findFirst({
-		where: {
-			name: ProductName.name,
-		},
+		where: { name: { contains: name } },
 	});
-	if (!product) {
-		throw new Error(`Product with name: ${ProductName.name} not found.`);
-	}
+
+	if (!product) throw new Error(`Product with name: ${name} not found.`);
+
 	return product;
 }
 
@@ -120,35 +117,36 @@ export async function updateProduct(
 	productData: ProductData,
 	productID: ProductID
 ): Promise<Product> {
-	if (!productData.name) {
+	const { name, description, price, quantity } = productData;
+	const { id } = productID;
+
+	if (!name) {
 		throw new Error("Name is required");
 	}
 
-	if (!productData.description) {
+	if (!description) {
 		throw new Error("Description is required");
 	}
 
-	if (!productData.price) {
+	if (!price) {
 		throw new Error("Price is required");
 	}
 
-	if (!productData.quantity) {
+	if (!quantity) {
 		throw new Error("Quantity is required");
 	}
 
 	const existingProduct = await prisma.product.findFirstOrThrow({
 		where: {
-			id: productData.id,
+			id: id,
 		},
 	});
 
-	if (!existingProduct) {
-		throw new Error("The product does not exist in stock");
-	}
-
+	if (!existingProduct) throw new Error("The product does not exist in stock");
+	
 	const product = await prisma.product.update({
 		where: {
-			id: productID.id,
+			id: id,
 		},
 		data: productData,
 	});

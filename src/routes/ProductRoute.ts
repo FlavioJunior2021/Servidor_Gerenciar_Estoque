@@ -47,7 +47,7 @@ export function getProductsByIdRoute(
 	done: any
 ) {
 	fastify.get(
-		"/product/id/:id",
+		"/product/:id",
 		{ preValidation: [jwtAuthenticate] },
 		getProductsByIdController
 	);
